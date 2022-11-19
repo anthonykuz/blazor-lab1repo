@@ -1,0 +1,79 @@
+﻿@page "/"
+
+<PageTitle>Azure App Service</PageTitle>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    .column {
+        float: left;
+        width: 50%;
+        padding: 10px;
+    }
+
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    .yearlyCost {
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+
+@if (LastSubmitResult != null)
+{
+    <h2>
+        Last submit status: @LastSubmitResult
+    </h2>
+}
+
+<h1>Azure App Service</h1>
+
+<hr />
+
+<EditForm Model="@azureApp" OnSubmit=@FormSubmitted>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="row">
+        <div class="column">
+            <h2>Instance Size</h2>
+            <select @bind="@azureApp.Size">
+            <option value="@InstanceSize.S1">S1</option>
+            <option value="@InstanceSize.S2">S2</option>
+            <option value="@InstanceSize.S3">S3</option>
+            </select>
+        </div>
+
+        <div class="column">
+            <h2>Instance Count</h2>
+            <InputNumber @bind-Value="azureApp.InstanceCount" />
+        </div>
+    </div>
+
+</EditForm>
+
+<hr />
+
+<div class="yearlyCost" Model="@azureApp">
+    Yearly Cost: @azureApp.CalculateYearly()
+</div>
+
+@code {
+    public AzureAppService azureApp = new AzureAppService();
+    string? LastSubmitResult;
+
+    void FormSubmitted(EditContext editContext)
+    {
+        bool formIsValid = editContext.Validate();
+        LastSubmitResult =
+          formIsValid
+          ? "Success - form was valid"
+          : "Failure - form was invalid";
+    }
+}
